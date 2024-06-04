@@ -7,14 +7,17 @@ import {
     useLoaderData,
     useNavigate,
     useNavigation,
+    useOutletContext,
 } from 'react-router-dom'
 import { Input, Select, CheckboxRadio } from '../../utils/formElement'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { getCart, getCartTotalPrice } from '../cart/cartSlice'
 import Button from '../../ui/Button'
-import { formatCurrency } from '../../utils/helper'
+import { currencyTwd, formatCurrency } from '../../utils/helper'
 import EmptyCart from '../cart/EmptyCart'
+import { useMutation } from '@tanstack/react-query'
+import { onSubmit } from '../../services/apiProduct'
 
 function CheckOut() {
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
@@ -25,7 +28,9 @@ function CheckOut() {
     const navigate = useNavigate()
     const navigation = useNavigation()
     const isSubmitting = navigation.state === 'submitting'
-    const cart = useSelector(getCart)
+    // const cart = useSelector(getCart)
+    const { cartData } = useOutletContext()
+    console.log(cartData)
 
     const {
         register,
@@ -48,13 +53,12 @@ function CheckOut() {
                 },
             },
         }
-
         try {
             const res = await axios.post(
                 `${apiBaseUrl}/v2/api/${apiPath}/order`,
                 form
             )
-            console.log('Order submission response:', res.data)
+            console.log('Order submission response:', res)
             navigate(`/order/${res.data.orderId}`)
         } catch (error) {
             console.error('Error submitting order:', error)
@@ -97,7 +101,11 @@ function CheckOut() {
 
     return (
         <div className="my-6 xs:px-3 sm:mx-6 ">
-            <form className="min-w-96" onSubmit={handleSubmit(onSubmit)}>
+            <Form
+                method="POST"
+                className="min-w-96"
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <p className="my-6 flex justify-center text-2xl font-semibold text-stone-700">
                     Customer info
                 </p>
@@ -300,15 +308,15 @@ function CheckOut() {
                         <p className="my-4 text-xl font-medium text-stone-700">
                             Details of the items purchased.
                         </p>
-                        {cart.map((item) => {
+                        {cartData.carts?.map((item) => {
                             return (
                                 <div
                                     className="mb-3 flex border-b border-stone-400"
                                     key={item.id}
                                 >
                                     <img
-                                        src={item.imageUrl}
-                                        alt={item.title}
+                                        src={item.product.imageUrl}
+                                        alt={item.product.title}
                                         className="mx-2 object-cover"
                                         style={{
                                             width: '48px',
@@ -318,15 +326,17 @@ function CheckOut() {
                                     <div className="w-100">
                                         <div className="flex justify-between">
                                             <p className="text-stone-700">
-                                                {item.title}
+                                                {item.product.title}
                                             </p>
                                             <p className="text-stone-700">
-                                                <small>x{item.quantity}</small>
+                                                <small>x{item.qty}</small>
                                             </p>
                                         </div>
                                         <div className="flex justify-between">
                                             <p className="mb-0 text-stone-700">
-                                                {formatCurrency(item.price)}
+                                                {formatCurrency(
+                                                    item.product.price
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -339,7 +349,7 @@ function CheckOut() {
                                 Total payment amount💰
                             </p>
                             <p className="mb-2 text-xl font-semibold text-stone-700 underline">
-                                {formatCurrency(totalAmount)}
+                                {currencyTwd(cartData?.final_total)}
                             </p>
                         </div>
                     </div>
@@ -350,21 +360,21 @@ function CheckOut() {
                         name="cart"
                         value={JSON.stringify(cart)}
                     /> */}
-                    <button
-                        type="submit"
+                    <Button
+                        type="primary"
                         disabled={isSubmitting}
-                        className="btn btn-primary bg-indigo-500 px-7 py-3"
+                        // className="btn btn-primary bg-indigo-500 px-7 py-3"
                     >
                         確認送出
                         {isSubmitting
                             ? 'Placing order🎶'
                             : `Order now from ${formatCurrency(totalAmount)}`}
-                    </button>
+                    </Button>
                     <Button to="/cart" type="secondary">
                         Return to shopping cart.
                     </Button>
                 </div>
-            </form>
+            </Form>
         </div>
     )
 }
@@ -374,13 +384,21 @@ export default CheckOut
 //     const formData = await request.formData()
 //     const data = Object.fromEntries(formData)
 //     const cart = JSON.parse(data.cart)
+//     const { name, email, tel, address } = data
+//     const form = {
+//         data: {
+//             user: {
+//                 name,
+//                 email,
+//                 tel,
+//                 address,
+//                 cart,
+//             },
+//         },
+//     }
+
 //     console.log('Received form data:', data)
 //     console.log('Parsed cart:', cart)
-
-//     const errors = {}
-
-//     if (Object.keys(errors).length > 0) return errors
-//     console.log(errors)
 
 //     console.log('Form to submit:', form)
 //     const newOrder = await onSubmit(form)

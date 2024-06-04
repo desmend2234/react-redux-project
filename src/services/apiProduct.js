@@ -1,12 +1,14 @@
 import axios from 'axios'
+import toast from 'react-hot-toast'
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 const apiPath = import.meta.env.VITE_REACT_APP_API_PATH
-
 export async function getAllProduct() {
     try {
         const res = await axios.get(
             `${apiBaseUrl}/v2/api/${apiPath}/products/all`
         )
+        console.log(res)
         return res.data.products
     } catch (error) {
         console.log(error)
@@ -30,6 +32,7 @@ export async function getProduct(page = 1) {
         console.log(error)
     }
 }
+
 export const getProductItem = async (id) => {
     try {
         const res = await axios.get(
@@ -44,7 +47,7 @@ export const getProductItem = async (id) => {
 export const getCartData = async () => {
     try {
         const res = await axios.get(`${apiBaseUrl}/v2/api/${apiPath}/cart`)
-        console.log('getCartData', res.data.data)
+        console.log(res.data.data)
         return res.data.data
     } catch (error) {
         console.log(error)
@@ -86,21 +89,20 @@ export const checkOutOrder = async (orderId) => {
     }
 }
 
-// export const onSubmit = async (form) => {
-//     try {
-//         const res = await axios.post(
-//             `${apiBaseUrl}/v2/api/${apiPath}/order`,
-//             form
-//         )
-//         if (!res.data.success) {
-//             throw new Error('Failed to submit order')
-//         }
-//         console.log('Order submission response:', res.data)
-//         return res.data
-//     } catch (error) {
-//         console.error('Error submitting order:', error)
-//     }
-// }
+export const onSubmit = async (form) => {
+    try {
+        const res = await axios.post(
+            `${apiBaseUrl}/v2/api/${apiPath}/order`,
+            form
+        )
+        if (!res.data.success) {
+            throw new Error('Failed to submit order')
+        }
+        return res.data
+    } catch (error) {
+        console.error('Error submitting order:', error)
+    }
+}
 
 export async function handleCategory(allCategory) {
     try {
@@ -108,12 +110,56 @@ export async function handleCategory(allCategory) {
         let unSortProduct = allCategory?.map((item) => {
             return item.category
         })
+
         // 篩選出不重複的種類
         let sorted = unSortProduct.filter((item, i) => {
             return unSortProduct.indexOf(item) === i
         })
-        // console.log(sorted)
+        console.log(sorted)
         return sorted
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const updateCartItem = async (item, newQty) => {
+    console.log(item, newQty)
+    const data = {
+        data: { product_id: item?.product_id, qty: newQty },
+    }
+    try {
+        const res = await axios.put(
+            `${apiBaseUrl}/v2/api/${apiPath}/cart/${item.id}`,
+            data
+        )
+        getCartData()
+        console.log(res)
+        return res?.data?.data?.qty
+    } catch (error) {
+        console.log(error)
+    }
+}
+export const removeCartItem = async (id) => {
+    console.log(id)
+    try {
+        const res = await axios.delete(
+            `${apiBaseUrl}/v2/api/${apiPath}/cart/${id}`
+        )
+        // getCartData()
+        toast.success('Successfully delete item')
+        getCartData()
+
+        return res.data
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+export const removeAllCartItem = async () => {
+    try {
+        const res = await axios.delete(`${apiBaseUrl}/v2/api/${apiPath}/carts`)
+        toast.success('Successfully delete all item')
+        getCartData()
     } catch (error) {
         console.log(error)
     }

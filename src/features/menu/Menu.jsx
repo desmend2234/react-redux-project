@@ -7,8 +7,11 @@ function Menu() {
     const { categoryList, allCategory } = useOutletContext()
     return (
         <div>
-            <div className="my-4 px-8">
-                <Breadcrumb aria-label="Default breadcrumb example">
+            <div className="my-4">
+                <Breadcrumb
+                    aria-label="Default breadcrumb example"
+                    className="container mx-auto"
+                >
                     <Breadcrumb.Item href="/" icon={HiHome}>
                         <p className="text-xl text-stone-600">Home</p>
                     </Breadcrumb.Item>

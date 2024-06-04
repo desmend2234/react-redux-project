@@ -4,7 +4,7 @@ function SideTabs() {
     const { categoryList, allCategory } = useOutletContext()
     return (
         <Link>
-            <div className="border-b border-gray-200 px-6 text-center text-sm font-semibold text-stone-500">
+            <div className="container mx-auto border-b border-gray-200 px-6 text-center text-sm font-semibold text-stone-500">
                 <ul className="-mb-px flex flex-row flex-wrap">
                     {categoryList?.map((cate) => {
                         return (

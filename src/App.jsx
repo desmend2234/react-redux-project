@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import Home from './ui/Home'
 import Menu from './features/menu/Menu'
-import Cart, { loader as cartLoader } from './features/cart/Cart'
+import Cart from './features/cart/Cart'
 
 import ProductDetail, {
     loader as productLoader,
@@ -16,6 +16,8 @@ import CheckOut from './features/order/CheckOut'
 import MenuItem from './features/menu/MenuItem'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'react-hot-toast'
+import About from './ui/About'
+
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -52,6 +54,11 @@ const router = createBrowserRouter([
                 ],
             },
             {
+                path: '/about',
+                element: <About />,
+                errorElement: <Error />,
+            },
+            {
                 path: '/menu/productDetail/:id',
                 element: <ProductDetail />,
                 loader: productLoader,
@@ -61,13 +68,13 @@ const router = createBrowserRouter([
             {
                 path: '/cart',
                 element: <Cart />,
-                loader: cartLoader,
                 errorElement: <Error />,
             },
             {
                 path: '/order/new',
                 element: <CheckOut />,
                 errorElement: <Error />,
+                // action: checkOutAction,
             },
             {
                 path: '/order/:orderId',

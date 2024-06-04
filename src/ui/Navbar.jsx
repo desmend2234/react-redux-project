@@ -5,7 +5,7 @@ import SearchProduct from './SearchProduct.jsx'
 import { getCartTotalQuantity } from '../features/cart/cartSlice.js'
 // import { fetchCategory } from '../features/menu/productSlice.js'
 
-function Navbar({ allCategory, categoryList }) {
+function Navbar({ categoryList, totalCartQty }) {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -38,7 +38,7 @@ function Navbar({ allCategory, categoryList }) {
     // }
     return (
         <div>
-            <nav className="border-stone-200 bg-blue-200 dark:border-gray-700 dark:bg-gray-900">
+            <nav className="border-stone-200 bg-blue-200">
                 <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
                     <NavLink
                         href="/"
@@ -141,7 +141,7 @@ function Navbar({ allCategory, categoryList }) {
                                                 type="button"
                                                 className="flex w-full items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             >
-                                                Continents
+                                                Category
                                                 <svg
                                                     className="ms-2.5 h-2.5 w-2.5"
                                                     aria-hidden="true"
@@ -180,41 +180,17 @@ function Navbar({ allCategory, categoryList }) {
                                                             )
                                                         }
                                                     )}
-                                                    {/* <li>
-                                                        <NavLink
-                                                            href="#"
-                                                            className="block px-4 py-2 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                        >
-                                                            My downloads
-                                                        </NavLink>
-                                                    </li>
-                                                    <li>
-                                                        <NavLink
-                                                            href="#"
-                                                            className="block px-4 py-2 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                        >
-                                                            Billing
-                                                        </NavLink>
-                                                    </li>
-                                                    <li>
-                                                        <NavLink
-                                                            href="#"
-                                                            className="block px-4 py-2 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                                        >
-                                                            Rewards
-                                                        </NavLink>
-                                                    </li> */}
                                                 </ul>
                                             </div>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <NavLink
                                                 href="#"
                                                 className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             >
                                                 Earnings
                                             </NavLink>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                     {username && (
                                         <div className="py-1">
@@ -231,10 +207,10 @@ function Navbar({ allCategory, categoryList }) {
                             </li>
                             <li>
                                 <NavLink
-                                    to="/menu/all"
+                                    to="#"
                                     className="block rounded px-3 py-2 text-stone-900 hover:bg-stone-100 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600"
                                 >
-                                    Services
+                                    About us
                                 </NavLink>
                             </li>
                             {/* <li>
@@ -249,22 +225,12 @@ function Navbar({ allCategory, categoryList }) {
                                 )}
                             </li> */}
                             <li>
-                                {username && cartQuantity > 0 && (
+                                {username && totalCartQty > 0 && (
                                     <div className="block rounded px-3 py-2 text-stone-900 hover:bg-stone-100 md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-600">
                                         <NavLink to="/cart">
-                                            {/* <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="32"
-                                                height="32"
-                                                fill="currentColor"
-                                                className="bi bi-cart"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-                                            </svg> */}
                                             Cart
                                             <span className=" rounded-full bg-red-500 px-2  text-stone-100">
-                                                {cartQuantity}
+                                                {totalCartQty}
                                             </span>
                                         </NavLink>
                                     </div>

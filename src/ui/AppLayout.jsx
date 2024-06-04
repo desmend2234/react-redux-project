@@ -1,70 +1,78 @@
 import Loader from './Loader.jsx'
 import Navbar from './Navbar.jsx'
-// import CartOverview from '../features/cart/CartOverview.jsx'
 import { Outlet, useNavigation } from 'react-router-dom'
 import Footer from './footer.jsx'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { useQuery } from '@tanstack/react-query'
-import { getAllProduct, handleCategory } from '../services/apiProduct.js'
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+    getAllProduct,
+    getCartData,
+    handleCategory,
+} from '../services/apiProduct.js'
 
 function AppLayout() {
     const [loading, setLoading] = useState(false)
     const [categoryList, setCategoryList] = useState()
+    const [totalCartQty, setTotalCartQty] = useState()
+    // const [cartData, setCartData] = useState()
+    const queryClient = useQueryClient()
 
-    // useEffect(() => {
-    //     axios.interceptors.request.use(
-    //         function (config) {
-    //             // Do something before request is sent
-    //             setLoading(true)
-    //             return config
-    //         },
-    //         function (error) {
-    //             // Do something with request error
-    //             return Promise.reject(error)
-    //         }
-    //     )
-
-    //     // Add a response interceptor
-    //     axios.interceptors.response.use(
-    //         function (response) {
-    //             // Any status code that lie within the range of 2xx cause this function to trigger
-    //             // Do something with response data
-    //             setLoading(false)
-    //             return response
-    //         },
-    //         function (error) {
-    //             // Any status codes that falls outside the range of 2xx cause this function to trigger
-    //             // Do something with response error
-    //             return Promise.reject(error)
-    //         }
-    //     )
-    // }, [])
-
-    const { data: allCategory, isLoading: allCategoryLoading } = useQuery({
-        queryKey: ['all'],
+    const { data: allCategory, isPending: allCategoryLoading } = useQuery({
+        queryKey: ['allProducts'],
         queryFn: getAllProduct,
-        onSuccess: (allCategory) => {
-            if (allCategory) {
-                handleCategoryAndUpdate(allCategory)
-            }
-        },
+        staleTime: 0,
     })
+    useEffect(() => {
+        handleCategoryAndUpdate(allCategory)
+    }, [allCategory])
+    const { data: cartData, isLoading } = useQuery({
+        queryKey: ['all'],
+        queryFn: getCartData,
+        staleTime: 0,
+    })
+    useEffect(() => {
+        calculateTotalQuantity(cartData)
+    }, [cartData])
 
     const handleCategoryAndUpdate = async (allCategory) => {
         try {
             const updatedList = await handleCategory(allCategory)
+            console.log(updatedList)
+
             setCategoryList(updatedList)
         } catch (error) {
             console.error('Error updating categoryList:', error)
         }
     }
 
+    const calculateTotalQuantity = (cartData) => {
+        console.log(cartData)
+
+        const totalQuantity = cartData?.carts?.reduce((sum, item) => {
+            return (sum += item.qty)
+        }, 0)
+        console.log(totalQuantity)
+
+        setTotalCartQty(totalQuantity)
+    }
+    useEffect(() => {
+        getCartData()
+    }, [])
+
     return (
         <div className="bg-white-50  grid min-h-dvh grid-rows-[auto_1fr_auto]">
-            <Navbar allCategory={allCategory} categoryList={categoryList} />
+            <Navbar categoryList={categoryList} totalCartQty={totalCartQty} />
             <Loader loading={allCategoryLoading} />
-            <Outlet context={{ categoryList, allCategory }} />
+            {!isLoading && (
+                <Outlet
+                    context={{
+                        categoryList,
+                        allCategory,
+                        cartData,
+                        totalCartQty,
+                    }}
+                />
+            )}
             <Footer />
         </div>
     )

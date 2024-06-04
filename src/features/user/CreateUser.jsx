@@ -13,7 +13,7 @@ function CreateUser() {
 
         if (!username) return
         dispatch(updateName(username))
-        navigate('/menu')
+        navigate('/menu/all')
     }
 
     return (
@@ -32,7 +32,9 @@ function CreateUser() {
 
             {username !== '' && (
                 <div>
-                    <Button type="primary">Start ordering</Button>
+                    <Button type="primary" to="/menu/all">
+                        Start ordering
+                    </Button>
                 </div>
             )}
         </form>
